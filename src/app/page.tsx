@@ -10,9 +10,27 @@ export default function Home() {
   const [loading, setLoading] = useState<boolean>(false);
 
   const startCamera = async () => {
-    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-    if (videoRef.current) {
-      videoRef.current.srcObject = stream;
+    // const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    // if (videoRef.current) {
+    //   videoRef.current.srcObject = stream;
+    // }
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: { exact: "environment" } },
+      });
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
+    } catch (err) {
+      // fallback to default camera if rear not available
+      console.warn("Rear camera not available, using default camera.");
+      const fallbackStream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+      });
+      if (videoRef.current) {
+        videoRef.current.srcObject = fallbackStream;
+      }
     }
   };
 
